@@ -5,7 +5,6 @@ on:
     branches:
       - main
 
-# 🛑 CRITICAL FIX: Add permissions block for OIDC 🛑
 permissions:
   id-token: write
   contents: read
@@ -15,12 +14,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4 # Updated to v4
+        uses: actions/checkout@v4 
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4 # Updated to v4
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          # Replace with the ARN of the IAM role you've configured for OIDC
+         
           role-to-assume: ${{ secrets.AWS_IAM_ROLE_ARN }} 
           aws-region: us-east-2
 
