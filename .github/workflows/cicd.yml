@@ -43,9 +43,9 @@ jobs:
       # ✅ Update kubeconfig (FIXED REGION)
       - name: Update kubeconfig
         run: |
-          aws eks update-kubeconfig \
-            --name eks_task\
-            --region us-east-2
+           aws eks update-kubeconfig \
+           --name eks_task \
+           --region us-east-2
 
       # ✅ Deploy with NEW IMAGE (IMPORTANT)
       - name: Deploy to EKS
