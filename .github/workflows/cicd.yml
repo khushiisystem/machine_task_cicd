@@ -1,0 +1,47 @@
+name: Node.js EKS CI/CD
+
+on:
+  push:
+    branches:
+      - main
+
+# 🛑 CRITICAL FIX: Add permissions block for OIDC 🛑
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4 # Updated to v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4 # Updated to v4
+        with:
+          # Replace with the ARN of the IAM role you've configured for OIDC
+          role-to-assume: ${{ secrets.AWS_IAM_ROLE_ARN }} 
+          aws-region: us-east-2
+
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2 # Updated to v2
+        id: login-ecr
+
+      - name: Build and push Docker image to ECR
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: my-nodejs-app
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+      - name: Update kubeconfig
+        run: |
+          aws eks update-kubeconfig --name ${{ secrets.EKS_CLUSTER_NAME }} --region us-east-2
+          
+      - name: Deploy to EKS
+        run: |
+          kubectl apply -f k8s/
+          kubectl rollout status deployment/nodejs-app-deployment
