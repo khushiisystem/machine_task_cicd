@@ -45,7 +45,7 @@ jobs:
         run: |
           aws eks update-kubeconfig \
             --name ${{ secrets.EKS_CLUSTER_NAME }} \
-            --region us-east-1
+            --region us-east-2
 
       # ✅ Deploy with NEW IMAGE (IMPORTANT)
       - name: Deploy to EKS
