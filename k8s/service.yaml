@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: nodejs-app-service
+spec:
+  selector:
+    app: nodejs-app
+  type: LoadBalancer # Exposes the service externally using an AWS Load Balancer
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 3000
+
